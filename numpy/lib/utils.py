@@ -17,7 +17,7 @@ from numpy.compat import getargspec, formatargspec
 __all__ = [
     'issubclass_', 'issubsctype', 'issubdtype', 'deprecate',
     'deprecate_with_doc', 'get_include', 'info', 'source', 'who',
-    'lookfor', 'byte_bounds', 'safe_eval'
+    'lookfor', 'byte_bounds', 'safe_eval', '__requires__',
     ]
 
 def get_include():
@@ -48,6 +48,25 @@ def get_include():
         import numpy.core as core
         d = os.path.join(os.path.dirname(core.__file__), 'include')
     return d
+
+
+def __requires__():
+    """
+    Return a list to be added to the ``install_requires`` of any package
+    built against the numpy C API.
+
+    So a package should put the following in its ``setup.py``::
+
+        import numpy
+        setup(...,
+              install_requires=[...] + numpy.__requires__()
+              ...)
+
+    """
+    # Return a version specifier of the form ~=1.16
+    from numpy.version import version
+    major, minor = version.split('.')[:2]
+    return ["~={}.{}".format(major, minor)]
 
 
 def _set_function_name(func, name):
